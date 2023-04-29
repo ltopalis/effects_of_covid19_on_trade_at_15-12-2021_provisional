@@ -18,10 +18,21 @@ def turnover_by_month(dataset_df: pandas.core.frame.DataFrame):
 
 
 def turnover_by_country(dataset_df: pandas.core.frame.DataFrame):
-    value_data_group_by_country = dataset_df.groupby(['Country', 'Measure'], as_index=False)['Value']
+    # ('Tonnes', '$')
+    countries = list(set(dataset_df['Country']))
 
-    return value_data_group_by_country.sum()
+    results = dict()
+    for country in countries:
+        data_in_tones = dataset_df.loc[(dataset_df['Country'] == country) & (dataset_df['Measure'] == 'Tonnes')]
+        data_in_dollars = dataset_df.loc[(dataset_df['Country'] == country) & (dataset_df['Measure'] == '$')]
 
+        sum_in_tones = data_in_tones['Value'].sum()
+        sum_in_dollars = data_in_dollars['Value'].sum()
+
+        value = (sum_in_tones, sum_in_dollars)
+        results[country] = value
+
+    return results
 
 def turnover_by_transport(dataset_df: pandas.core.frame.DataFrame):
     value_data_group_by_transport = dataset_df.groupby(['Transport_Mode', 'Measure'], as_index=False)['Value']
