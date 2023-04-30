@@ -10,14 +10,13 @@ if __name__ == '__main__':
     tonnes_bar_by_country(data)
     dollars_bar_by_country(data)
 
-    # result = turnover_by_day(data)
-    # print(result, end="\n\n")
-    #
-    # result = turnover_by_commodity(data)
-    # print(result, end="\n\n")
+    tonnes_bar_by_day(data)
+    dollars_bar_by_day(data)
 
-    # result = turnover_by_transport(data)
-    # print(result)
+    dollars_bar_by_commodity(data)
+    tonnes_bar_by_commodity(data)
 
+    dollars_bar_by_transport(data)
+    tonnes_bar_by_transport(data)
 
 

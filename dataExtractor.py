@@ -34,13 +34,14 @@ def turnover_by_country(dataset_df: pandas.core.frame.DataFrame):
 
     return results
 
-def turnover_by_transport(dataset_df: pandas.core.frame.DataFrame):
+
+def turnover_by_transport(dataset_df: pandas.core.frame.DataFrame) -> pandas.core.frame.DataFrame:
     value_data_group_by_transport = dataset_df.groupby(['Transport_Mode', 'Measure'], as_index=False)['Value']
 
     return value_data_group_by_transport.sum()
 
 
-def turnover_by_day(dataset_df: pandas.core.frame.DataFrame):
+def turnover_by_day(dataset_df: pandas.core.frame.DataFrame) -> pandas.core.frame.DataFrame:
     value_data_group_by_weekday = dataset_df.groupby(['Weekday', 'Measure'], as_index=False)['Value']
 
     return value_data_group_by_weekday.sum()
