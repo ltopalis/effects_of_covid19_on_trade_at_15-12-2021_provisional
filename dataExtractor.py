@@ -51,3 +51,17 @@ def turnover_by_commodity(dataset_df: pandas.core.frame.DataFrame):
     value_data_group_by_commodity = dataset_df.groupby(['Commodity', 'Measure'], as_index=False)['Value']
 
     return value_data_group_by_commodity.sum()
+
+
+def max_turnout_by_month(dataset_df: pandas.core.frame.DataFrame):
+    # $, tonnes
+    value_data_group_by_month = turnover_by_month(dataset_df)
+
+    data_in_dollars = value_data_group_by_month.loc[value_data_group_by_month['Measure'] == '$']
+    data_in_tonnes = value_data_group_by_month.loc[value_data_group_by_month['Measure'] == 'Tonnes']
+
+    sorted_df_dollars_by_day = data_in_dollars[["Value", "Date"]].sort_values(by=['Value'], ascending=False).reset_index()
+    sorted_df_tonnes_by_day = data_in_tonnes[["Value", "Date"]].sort_values(by=['Value'], ascending=False).reset_index()
+
+    return sorted_df_dollars_by_day[1:6], sorted_df_tonnes_by_day[1:6]
+
