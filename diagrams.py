@@ -228,7 +228,7 @@ def max_dollars_by_month(data, ax, plt, canvas):
 
     values = list(data_by_month['Value'])
 
-    bars = ax.bar(date_list, values, width=0.6, alpha=0.8, label='$', color="red")
+    bars = ax.bar(date_list, values, width=0.6, alpha=0.8, label='$')
     plt.bar_label(bars)
     plt.title("5 μήνες με το μεγαλύτερο τζίρο")
     plt.xlabel("Μήνες")
@@ -248,7 +248,7 @@ def max_tonnes_by_month(data, ax, plt, canvas):
 
     values = list(data_by_month['Value'])
 
-    bars = ax.bar(date_list, values, width=0.6, alpha=0.8, label='Τόνοι')
+    bars = ax.bar(date_list, values, color="red", width=0.6, alpha=0.8, label='Τόνοι')
     plt.bar_label(bars)
     plt.title("5 μήνες με το μεγαλύτερο τζίρο")
     plt.xlabel("Μήνες")
