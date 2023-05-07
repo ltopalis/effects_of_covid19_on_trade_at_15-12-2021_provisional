@@ -73,11 +73,16 @@ def main():
     max_dollars_month_button = customtkinter.CTkButton(master=left, width=468, height=50,
                                                        text="Παρουσίαση των 5 μηνών με το μεγαλύτερο τζίρο ($)",
                                                        command=lambda: max_dollars_by_month(data, ax, plt,
-                                                                                                        canvas))
+                                                                                            canvas))
     max_tonnes_month_button = customtkinter.CTkButton(master=left, width=468, height=50,
-                                                       text="Παρουσίαση των 5 μηνών με το μεγαλύτερο τζίρο (Tonnes)",
-                                                       command=lambda: max_tonnes_by_month(data, ax, plt,
-                                                                                                       canvas))
+                                                      text="Παρουσίαση των 5 μηνών με το μεγαλύτερο τζίρο (Tonnes)",
+                                                      command=lambda: max_tonnes_by_month(data, ax, plt,
+                                                                                          canvas))
+    max_dollars_commodity_button = customtkinter.CTkButton(master=left, width=468, height=50,
+                                                           text="Παρουσίαση των 5 κατηγοριών εμπορευμάτων\n"
+                                                                "με το μεγαλύτερο τζίρο, για κάθε χώρα",
+                                                           command=lambda: max_dollars_by_commodity(data, ax, plt,
+                                                                                                    canvas))
     clc_button = customtkinter.CTkButton(master=left, width=468, height=50, text="Εκκαθάριση Οθόνης",
                                          command=lambda: clc(ax, canvas), fg_color="red", hover_color="#970202")
 
@@ -93,6 +98,7 @@ def main():
     tonnes_commodity_button.pack(pady=5, padx=5)
     max_dollars_month_button.pack(pady=5, padx=5)
     max_tonnes_month_button.pack(pady=5, padx=5)
+    max_dollars_commodity_button.pack(pady=5, padx=5)
     clc_button.pack(pady=5, padx=5, side=customtkinter.BOTTOM)
     #
     #
@@ -107,4 +113,15 @@ def main():
 
 
 if __name__ == '__main__':
+    data = read_data_from_url("effects-of-covid-19-on-trade-at-15-december-2021-provisional.csv")
+    # #
+    # # # print(data.columns)
+    max_turnover_by_commodity(data)
+
+    # print(data)
+    # print(type(x))
+    # print(x)
+    # print('-------------------------------------------------------------------')
+    # print(y)
+
     main()

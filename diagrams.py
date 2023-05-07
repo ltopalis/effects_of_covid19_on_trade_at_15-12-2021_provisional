@@ -4,10 +4,9 @@ from textwrap import wrap
 
 def tonnes_diagram_by_months(data, ax, plt, canvas):
     ax.clear()
-    data_by_month = turnover_by_month(data)
+    _, data_in_tonnes = turnover_by_month(data)
 
-    values_in_tonnes = data_by_month.loc[data_by_month['Measure'] == 'Tonnes']
-    ax.plot(values_in_tonnes['Date'], values_in_tonnes['Value'], 'r', label="Τόνοι")
+    ax.plot(data_in_tonnes, label='Tonnes', color='red')
     plt.title("Τζίρος ανα Μήνα")
     plt.xlabel("Έτη")
     plt.ylabel("$")
@@ -18,14 +17,12 @@ def tonnes_diagram_by_months(data, ax, plt, canvas):
 
 def dollars_diagram_by_months(data, ax, plt, canvas):
     ax.clear()
-    data_by_month = turnover_by_month(data)
+    data_in_dollars, _ = turnover_by_month(data)
 
-    values_in_dollars = data_by_month.loc[data_by_month['Measure'] == '$']
-
-    ax.plot(values_in_dollars['Date'], values_in_dollars['Value'], label="$")
+    ax.plot(data_in_dollars, label="$")
     plt.title("Τζίρος ανα Μήνα")
     plt.xlabel("Έτη")
-    plt.ylabel("Τόνοι")
+    plt.ylabel("$")
     plt.legend()
     plt.grid()
     canvas.draw()
@@ -33,22 +30,16 @@ def dollars_diagram_by_months(data, ax, plt, canvas):
 
 def tonnes_bar_by_country(data, ax, plt, canvas):
     ax.clear()
-    data_by_country = turnover_by_country(data)
+    _, data_in_tonnes = turnover_by_country(data)
 
-    country = []
-    tonnes = []
-    for elem in data_by_country:
-        country += [elem]
-        tonnes += [data_by_country[elem][0]]
+    country = tuple(data_in_tonnes.index)
+    country = ['\n'.join(wrap(l, 9)) for l in country]
 
-    country = tuple(country)
-    country = ['\n'.join(wrap(l, 6)) for l in country]
-    tonnes = tuple(tonnes)
-
-    ax.bar(country, tonnes, color='red', alpha=0.8, width=0.6, label="Τόνοι")
+    bars = ax.bar(country, data_in_tonnes, color='red', alpha=0.8, width=0.6, label="Τόνοι")
     plt.title("Τζίρος ανα Χώρα")
     plt.xlabel("Χώρα")
     plt.ylabel("Τόνοι")
+    plt.bar_label(bars)
 
     plt.legend()
     canvas.draw()
@@ -56,23 +47,44 @@ def tonnes_bar_by_country(data, ax, plt, canvas):
 
 def dollars_bar_by_country(data, ax, plt, canvas):
     ax.clear()
-    data_by_country = turnover_by_country(data)
+    data_in_dollars, _ = turnover_by_country(data)
 
-    country = []
+    country = tuple(data_in_dollars.index)
+    country = ['\n'.join(wrap(l, 9)) for l in country]
 
-    dollars = []
-    for elem in data_by_country:
-        country += [elem]
-        dollars += [data_by_country[elem][1]]
-
-    country = tuple(country)
-    country = ['\n'.join(wrap(l, 6)) for l in country]
-    dollars = tuple(dollars)
-
-    ax.bar(country, dollars, color='blue', alpha=0.8, width=0.6, label="$")
+    bars = ax.bar(country, data_in_dollars, color='blue', alpha=0.8, width=0.6, label="Τόνοι")
     plt.title("Τζίρος ανα Χώρα")
     plt.xlabel("Χώρα")
+    plt.ylabel("Τόνοι")
+    plt.bar_label(bars)
+
+    plt.legend()
+    canvas.draw()
+
+
+def tonnes_bar_by_transport(data, ax, plt, canvas):
+    ax.clear()
+    _, data_in_tonnes = turnover_by_transport(data)
+
+    bars = ax.bar(data_in_tonnes.index, data_in_tonnes, color='blue', alpha=0.8, width=0.6, label="Τόνοι")
+    plt.title("Τζίρος ανα Χώρα")
+    plt.xlabel("Χώρα")
+    plt.ylabel("Τόνοι")
+    plt.bar_label(bars)
+
+    plt.legend()
+    canvas.draw()
+
+
+def dollars_bar_by_transport(data, ax, plt, canvas):
+    ax.clear()
+    data_in_dollars, _ = turnover_by_transport(data)
+
+    bars = ax.bar(data_in_dollars.index, data_in_dollars, color='blue', alpha=0.8, width=0.6, label="Τόνοι")
+    plt.title("Τζίρος ανα Είδος Μεταφορικού Μέσου")
+    plt.xlabel("Είδος Μεταφορικού Μέσου")
     plt.ylabel("$")
+    plt.bar_label(bars)
 
     plt.legend()
     canvas.draw()
@@ -80,112 +92,43 @@ def dollars_bar_by_country(data, ax, plt, canvas):
 
 def tonnes_bar_by_day(data, ax, plt, canvas):
     ax.clear()
-    data_by_day = turnover_by_day(data)
+    _, data_in_tonnes = turnover_by_day(data)
 
-    values_in_tonnes = data_by_day.loc[data_by_day['Measure'] == 'Tonnes']
-    values_in_tonnes = values_in_tonnes[['Weekday', 'Value']]
-
-    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-
-    value_list = []
-    day = []
-    for weekday in weekdays:
-        value = values_in_tonnes['Value'].loc[values_in_tonnes['Weekday'] == weekday].sum()
-        value_list += [value]
-        day += [weekday]
-
-    ax.bar(day, value_list, color='red', width=0.6, alpha=0.8, label='Τόνοι')
+    bars = ax.bar(data_in_tonnes.index, data_in_tonnes, color='blue', alpha=0.8, width=0.6, label="Τόνοι")
+    plt.title("Τζίρος ανα ημέρα")
     plt.xlabel("Ημέρα")
     plt.ylabel("Τόνοι")
-    plt.title("Τζίρος ανα Ημέρα")
-    plt.legend()
+    plt.bar_label(bars)
 
+    plt.legend()
     canvas.draw()
 
 
 def dollars_bar_by_day(data, ax, plt, canvas):
     ax.clear()
-    data_by_day = turnover_by_day(data)
+    data_in_dollars, _ = turnover_by_day(data)
 
-    values_in_dollars = data_by_day.loc[data_by_day['Measure'] == '$']
-    values_in_dollars = values_in_dollars[['Weekday', 'Value']]
-
-    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-
-    value_list = []
-    day = []
-    for weekday in weekdays:
-        value = values_in_dollars['Value'].loc[values_in_dollars['Weekday'] == weekday].sum()
-        value_list += [value]
-        day += [weekday]
-
-    ax.bar(day, value_list, width=0.6, alpha=0.8, label='$')
+    bars = ax.bar(data_in_dollars.index, data_in_dollars, color='red', alpha=0.8, width=0.6, label="$")
+    plt.title("Τζίρος ανα Ημέρα")
     plt.xlabel("Ημέρα")
     plt.ylabel("$")
-    plt.title("Τζίρος ανα Ημέρα")
-    plt.legend()
-    canvas.draw()
-
-
-def tonnes_bar_by_transport(data, ax, plt, canvas):
-    ax.clear()
-    data_by_transport = data[['Transport_Mode', 'Value']].loc[data['Measure'] == 'Tonnes']
-    transports = set(data['Transport_Mode'])
-
-    transport_mean = []
-    values = []
-    for transport in transports:
-        value = data_by_transport['Value'].loc[data_by_transport['Transport_Mode'] == transport].sum()
-        transport_mean += [transport]
-        values += [value]
-
-    bars = ax.bar(transport_mean, values, color='red', width=0.6, alpha=0.8, label='Τόνοι')
-    plt.xlabel("Μεταφορικό Μέσο")
-    plt.ylabel("Τόνοι")
-    plt.title("Τζίρος ανα Μεταφορικό Μέσο")
     plt.bar_label(bars)
-    plt.legend()
-    canvas.draw()
 
-
-def dollars_bar_by_transport(data, ax, plt, canvas):
-    ax.clear()
-    data_by_transport = data[['Transport_Mode', 'Value']].loc[data['Measure'] == '$']
-    transports = set(data['Transport_Mode'])
-
-    transport_mean = []
-    values = []
-    for transport in transports:
-        value = data_by_transport['Value'].loc[data_by_transport['Transport_Mode'] == transport].sum()
-        transport_mean += [transport]
-        values += [value]
-
-    bars = ax.bar(transport_mean, values, width=0.6, alpha=0.8, label='$')
-    plt.xlabel("Μεταφορικό Μέσο")
-    plt.ylabel("$")
-    plt.title("Τζίρος ανα Μεταφορικό Μέσο")
-    plt.bar_label(bars)
     plt.legend()
     canvas.draw()
 
 
 def tonnes_bar_by_commodity(data, ax, plt, canvas):
     ax.clear()
-    data_by_commodity = data[['Commodity', 'Value']].loc[data['Measure'] == 'Tonnes']
-    commodities = set(data_by_commodity['Commodity'])
+    data_in_dollars, _ = turnover_by_commodity(data)
 
-    commodity_list = []
-    values = []
-    for commodity in commodities:
-        value = data_by_commodity['Value'].loc[data_by_commodity['Commodity'] == commodity].sum()
-        commodity_list += [commodity]
-        values += [value]
+    commodities = list(data_in_dollars.index)
 
     commodity_list = [
         '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2]))) if len(commodity) >= 15 else commodity
-        for commodity in commodity_list]
+        for commodity in commodities]
 
-    ax.barh(commodity_list, values, color='red', alpha=0.8, label='Τόνοι')
+    ax.barh(commodity_list, data_in_dollars, color='red', alpha=0.8, label='Τόνοι')
     plt.xlabel("Τόνοι")
     plt.ylabel("Κατηγορία Εμπορεύματος")
     plt.title("Τζίρος ανα Κατηγορία Εμπορεύματος")
@@ -195,21 +138,15 @@ def tonnes_bar_by_commodity(data, ax, plt, canvas):
 
 def dollars_bar_by_commodity(data, ax, plt, canvas):
     ax.clear()
-    data_by_commodity = data[['Commodity', 'Value']].loc[data['Measure'] == '$']
-    commodities = set(data_by_commodity['Commodity'])
+    _, data_in_tonnes = turnover_by_commodity(data)
 
-    commodity_list = []
-    values = []
-    for commodity in commodities:
-        value = data_by_commodity['Value'].loc[data_by_commodity['Commodity'] == commodity].sum()
-        commodity_list += [commodity]
-        values += [value]
+    commodities = list(data_in_tonnes.index)
 
     commodity_list = [
         '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2]))) if len(commodity) >= 15 else commodity
-        for commodity in commodity_list]
+        for commodity in commodities]
 
-    ax.barh(commodity_list, values, alpha=0.8, label='$')
+    ax.barh(commodity_list, data_in_tonnes, alpha=0.8, label='$')
     plt.xlabel("$")
     plt.ylabel("Κατηγορία Εμπορεύματος")
     plt.title("Τζίρος ανα Κατηγορία Εμπορεύματος")
@@ -219,16 +156,14 @@ def dollars_bar_by_commodity(data, ax, plt, canvas):
 
 def max_dollars_by_month(data, ax, plt, canvas):
     ax.clear()
-    data_by_month, _ = max_turnout_by_month(data)
+    data_by_month, _ = max_turnover_by_month(data)
 
     date_list = []
-    for datetime in data_by_month['Date']:
+    for datetime in data_by_month.index:
         date = datetime.date()
         date_list.append(date.strftime("%B %Y"))
 
-    values = list(data_by_month['Value'])
-
-    bars = ax.bar(date_list, values, width=0.6, alpha=0.8, label='$')
+    bars = ax.bar(date_list, data_by_month['$'], width=0.6, alpha=0.8, label='$')
     plt.bar_label(bars)
     plt.title("5 μήνες με το μεγαλύτερο τζίρο")
     plt.xlabel("Μήνες")
@@ -239,22 +174,103 @@ def max_dollars_by_month(data, ax, plt, canvas):
 
 def max_tonnes_by_month(data, ax, plt, canvas):
     ax.clear()
-    _, data_by_month = max_turnout_by_month(data)
+    _, data_by_month = max_turnover_by_month(data)
 
     date_list = []
-    for datetime in data_by_month['Date']:
+    for datetime in data_by_month.index:
         date = datetime.date()
         date_list.append(date.strftime("%B %Y"))
 
-    values = list(data_by_month['Value'])
-
-    bars = ax.bar(date_list, values, color="red", width=0.6, alpha=0.8, label='Τόνοι')
+    bars = ax.bar(date_list, data_by_month['Tonnes'], color="red", width=0.6, alpha=0.8, label='Τόνοι')
     plt.bar_label(bars)
     plt.title("5 μήνες με το μεγαλύτερο τζίρο")
     plt.xlabel("Μήνες")
     plt.ylabel("Tonnes")
     plt.legend()
     canvas.draw()
+
+
+def max_dollars_by_commodity(data, ax, plt, canvas):
+    ax.clear()
+    data_by_commodity, _ = max_turnover_by_commodity(data)
+
+    countries = set()
+    commodities = set()
+    for (country, commodity) in data_by_commodity.index:
+        countries.add(country)
+        commodities.add(commodity)
+
+    countries = list(countries)
+    commodities = list(commodities)
+
+    data_to_print = {}
+    for country in countries:
+        for commodity in commodities:
+            try:
+                value = data_by_commodity.loc[(country, commodity)]['$']
+                if country not in data_to_print:
+                    if len(commodity) >= 15:
+                        commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
+                    data_to_print[country] = []
+                    data_to_print[country] += [[commodity]]
+                    data_to_print[country] += [[value]]
+                else:
+                    if len(commodity) >= 15:
+                        commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
+                    data_to_print[country][0] += [commodity]
+                    data_to_print[country][1] += [value]
+            except KeyError:
+                continue
+
+    for country in countries:
+        bars = plt.bar(data_to_print[country][0], data_to_print[country][1], label='Tonnes', width=0.6, alpha=0.8)
+        plt.title(f"5 κατηγορίες εμπορευμάτων με το μεγαλύτερο τζίρο,\nγια {country}")
+        plt.xlabel("Κατηγορία Εμπορεύματος")
+        plt.ylabel("Τόνοι")
+        plt.bar_label(bars)
+        plt.legend()
+        plt.show()
+
+def max_tonnes_by_commodity(data, ax, plt, canvas):
+    ax.clear()
+    _, data_by_commodity = max_turnover_by_commodity(data)
+
+    countries = set()
+    commodities = set()
+    for (country, commodity) in data_by_commodity.index:
+        countries.add(country)
+        commodities.add(commodity)
+
+    countries = list(countries)
+    commodities = list(commodities)
+
+    data_to_print = {}
+    for country in countries:
+        for commodity in commodities:
+            try:
+                value = data_by_commodity.loc[(country, commodity)]['Tonnes']
+                if country not in data_to_print:
+                    if len(commodity) >= 15:
+                        commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
+                    data_to_print[country] = []
+                    data_to_print[country] += [[commodity]]
+                    data_to_print[country] += [[value]]
+                else:
+                    if len(commodity) >= 15:
+                        commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
+                    data_to_print[country][0] += [commodity]
+                    data_to_print[country][1] += [value]
+            except KeyError:
+                continue
+
+    for country in countries:
+        bars = plt.bar(data_to_print[country][0], data_to_print[country][1], label='Tonnes', width=0.6, alpha=0.8)
+        plt.title(f"5 κατηγορίες εμπορευμάτων με το μεγαλύτερο τζίρο,\nγια {country}")
+        plt.xlabel("Κατηγορία Εμπορεύματος")
+        plt.ylabel("Τόνοι")
+        plt.bar_label(bars)
+        plt.legend()
+        plt.show()
 
 
 def clc(ax, canvas):

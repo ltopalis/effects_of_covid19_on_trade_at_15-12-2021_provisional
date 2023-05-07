@@ -1,5 +1,5 @@
+import pandas
 import pandas as pd
-import pandas.core.frame
 
 
 def read_data_from_url(
@@ -9,59 +9,148 @@ def read_data_from_url(
     return pd.read_csv(url)
 
 
-def turnover_by_month(dataset_df: pandas.core.frame.DataFrame):
-    dataset_df['Date'] = pd.to_datetime(dataset_df['Date'], format="%d/%m/%Y")
+def turnover_by_month(dataset_df: pd.core.frame.DataFrame):
+    temp_df = dataset_df.copy()
+    temp_df['Date'] = pd.to_datetime(temp_df['Date'], format="%d/%m/%Y")
 
-    values_monthly_df = dataset_df.groupby([pd.Grouper(key='Date', freq='M'), 'Measure'], as_index=False)['Value'].sum()
+    values_monthly_df = temp_df.groupby([pd.Grouper(key='Date', freq='M'), 'Direction', 'Measure'],
+                                        as_index=False).sum()
 
-    return values_monthly_df
+    turnover = pd.pivot_table(values_monthly_df, values='Value', index='Date', columns=['Direction', 'Measure'],
+                              aggfunc='sum')
+
+    turnover.fillna(0, inplace=True)
+
+    dollars = turnover['Imports']['$'] + turnover['Reimports']['$'] - turnover['Exports']['$']
+    tonnes = -turnover['Exports']['Tonnes']
+
+    return dollars, tonnes
 
 
 def turnover_by_country(dataset_df: pandas.core.frame.DataFrame):
-    # ('Tonnes', '$')
-    countries = list(set(dataset_df['Country']))
+    values_country_df = dataset_df.groupby(['Country', 'Direction', 'Measure'], as_index=False).sum()
 
-    results = dict()
-    for country in countries:
-        data_in_tones = dataset_df.loc[(dataset_df['Country'] == country) & (dataset_df['Measure'] == 'Tonnes')]
-        data_in_dollars = dataset_df.loc[(dataset_df['Country'] == country) & (dataset_df['Measure'] == '$')]
+    values_country_df = values_country_df[['Country', 'Direction', 'Measure', 'Value']]
 
-        sum_in_tones = data_in_tones['Value'].sum()
-        sum_in_dollars = data_in_dollars['Value'].sum()
+    turnover = pd.pivot_table(values_country_df, values='Value', index='Country', columns=['Direction', 'Measure'],
+                              aggfunc='sum')
 
-        value = (sum_in_tones, sum_in_dollars)
-        results[country] = value
+    turnover.fillna(0, inplace=True)
 
-    return results
+    dollars = turnover['Imports']['$'] + turnover['Reimports']['$'] - turnover['Exports']['$']
+    tonnes = - turnover['Exports']['Tonnes']
+
+    return dollars, tonnes
 
 
 def turnover_by_transport(dataset_df: pandas.core.frame.DataFrame) -> pandas.core.frame.DataFrame:
-    value_data_group_by_transport = dataset_df.groupby(['Transport_Mode', 'Measure'], as_index=False)['Value']
+    values_transport_df = dataset_df.groupby(['Transport_Mode', 'Direction', 'Measure'], as_index=False).sum()
 
-    return value_data_group_by_transport.sum()
+    values_transport_df = values_transport_df[['Direction', 'Transport_Mode', 'Measure', 'Value']]
+
+    turnover = pd.pivot_table(values_transport_df, values='Value', index='Transport_Mode',
+                              columns=['Direction', 'Measure'],
+                              aggfunc='sum')
+
+    turnover.fillna(0, inplace=True)
+
+    dollars = turnover['Imports']['$'] + turnover['Reimports']['$'] - turnover['Exports']['$']
+    tonnes = - turnover['Exports']['Tonnes']
+
+    return dollars, tonnes
 
 
 def turnover_by_day(dataset_df: pandas.core.frame.DataFrame) -> pandas.core.frame.DataFrame:
-    value_data_group_by_weekday = dataset_df.groupby(['Weekday', 'Measure'], as_index=False)['Value']
+    values_transport_df = dataset_df.groupby(['Weekday', 'Direction', 'Measure'], as_index=False).sum()
 
-    return value_data_group_by_weekday.sum()
+    values_transport_df = values_transport_df[['Direction', 'Weekday', 'Measure', 'Value']]
+
+    turnover = pd.pivot_table(values_transport_df, values='Value', index='Weekday',
+                              columns=['Direction', 'Measure'],
+                              aggfunc='sum')
+
+    turnover.fillna(0, inplace=True)
+
+    dollars = turnover['Imports']['$'] + turnover['Reimports']['$'] - turnover['Exports']['$']
+    tonnes = - turnover['Exports']['Tonnes']
+
+    return dollars, tonnes
 
 
 def turnover_by_commodity(dataset_df: pandas.core.frame.DataFrame):
-    value_data_group_by_commodity = dataset_df.groupby(['Commodity', 'Measure'], as_index=False)['Value']
+    values_transport_df = dataset_df.groupby(['Commodity', 'Direction', 'Measure'], as_index=False).sum()
 
-    return value_data_group_by_commodity.sum()
+    values_transport_df = values_transport_df[['Direction', 'Commodity', 'Measure', 'Value']]
+
+    turnover = pd.pivot_table(values_transport_df, values='Value', index='Commodity',
+                              columns=['Direction', 'Measure'],
+                              aggfunc='sum')
+
+    turnover.fillna(0, inplace=True)
+
+    dollars = turnover['Imports']['$'] + turnover['Reimports']['$'] - turnover['Exports']['$']
+    tonnes = turnover['Imports']['$'] + turnover['Reimports']['$'] - turnover['Exports']['Tonnes']
+
+    return dollars, tonnes
 
 
-def max_turnout_by_month(dataset_df: pandas.core.frame.DataFrame):
-    # $, tonnes
-    value_data_group_by_month = turnover_by_month(dataset_df)
+def max_turnover_by_month(dataset_df: pandas.core.frame.DataFrame):
+    dollars, tonnes = turnover_by_month(dataset_df)
 
-    data_in_dollars = value_data_group_by_month.loc[value_data_group_by_month['Measure'] == '$']
-    data_in_tonnes = value_data_group_by_month.loc[value_data_group_by_month['Measure'] == 'Tonnes']
+    dollars_df = pd.DataFrame(dollars)
+    tonnes_df = pd.DataFrame(tonnes)
 
-    sorted_df_dollars_by_day = data_in_dollars[["Value", "Date"]].sort_values(by=['Value'], ascending=False).reset_index()
-    sorted_df_tonnes_by_day = data_in_tonnes[["Value", "Date"]].sort_values(by=['Value'], ascending=False).reset_index()
+    sort_dollars_df = dollars_df.sort_values(by=['$'], ascending=False).head(5)
+    sort_tonnes_df = tonnes_df.sort_values(by=['Tonnes'], ascending=False).head(5)
 
-    return sorted_df_dollars_by_day[1:6], sorted_df_tonnes_by_day[1:6]
+    return sort_dollars_df, sort_tonnes_df
 
+
+def max_turnover_by_commodity(dataset_df: pandas.core.frame.DataFrame):
+    values_commodity_df = dataset_df.groupby(['Country', 'Commodity', 'Direction', 'Measure'], as_index=False).sum()
+
+    values_commodity_df = values_commodity_df[['Country', 'Commodity', 'Direction', 'Measure', 'Value']]
+
+    turnover = pd.pivot_table(values_commodity_df, values='Value', index=['Country', 'Commodity'],
+                              columns=['Direction', 'Measure'], aggfunc='sum')
+
+    turnover.fillna(0, inplace=True)
+
+    dollars = dict()
+    tonnes = dict()
+    countries = []
+    for (country, commodity) in turnover.index:
+        dollar_value = turnover.loc[country, commodity]['Imports']['$'] + turnover.loc[country, commodity]['Reimports'][
+            '$'] \
+                       - turnover.loc[country, commodity]['Exports']['$']
+        tonnes_value = - turnover.loc[country, commodity]['Exports']['Tonnes']
+
+        countries.append(country)
+
+        dollars['$'] = dollar_value
+        tonnes['Tonnes'] = tonnes_value
+
+    dollars_df = pd.DataFrame(data=dollars, index=turnover.index)
+    tonnes_df = pd.DataFrame(data=tonnes, index=turnover.index)
+
+    countries = set(countries)
+
+    def get_top_5(group):
+        return group.head(5)
+
+    dollars_dataframe = pd.DataFrame()
+    tonnes_dataframe = pd.DataFrame()
+    for country in countries:
+        dollars_return_df = dollars_df.loc[country].apply(lambda x: get_top_5(x))
+        dollars_return_df['Country'] = country
+        dollars_dataframe = pd.concat([dollars_dataframe, dollars_return_df])
+
+        tonnes_return_df = tonnes_df.loc[country].apply(lambda x: get_top_5(x))
+        tonnes_return_df['Country'] = country
+        tonnes_dataframe = pd.concat([tonnes_dataframe, tonnes_return_df])
+
+    dollars_dataframe = dollars_dataframe.groupby(by=['Country', 'Commodity']).sum()
+    tonnes_dataframe = tonnes_dataframe.groupby(by=['Country', 'Commodity']).sum()
+
+    # print(tonnes_dataframe)
+    return dollars_dataframe, tonnes_dataframe
