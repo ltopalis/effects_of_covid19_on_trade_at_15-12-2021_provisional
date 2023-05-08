@@ -106,7 +106,7 @@ def max_turnover_by_month(dataset_df: pandas.core.frame.DataFrame):
     return sort_dollars_df, sort_tonnes_df
 
 
-def max_turnover_by_commodity(dataset_df: pandas.core.frame.DataFrame):
+def max_turnover_by_commodity_country(dataset_df: pandas.core.frame.DataFrame):
     values_commodity_df = dataset_df.groupby(['Country', 'Commodity', 'Direction', 'Measure'], as_index=False).sum()
 
     values_commodity_df = values_commodity_df[['Country', 'Commodity', 'Direction', 'Measure', 'Value']]
@@ -154,3 +154,14 @@ def max_turnover_by_commodity(dataset_df: pandas.core.frame.DataFrame):
 
     # print(tonnes_dataframe)
     return dollars_dataframe, tonnes_dataframe
+
+
+def max_turnover_by_commodity_day(dataset_df: pandas.core.frame.DataFrame):
+    values_commodity_df = dataset_df.groupby(['Commodity', 'Weekday', 'Direction', 'Measure'], as_index=False).sum()
+    values_commodity_df = values_commodity_df[['Commodity', 'Weekday', 'Direction', 'Measure', 'Value']]
+
+    turnover = pd.pivot_table(values_commodity_df, values='Value', index=['Weekday', 'Commodity'],
+                              columns=['Direction', 'Measure'], aggfunc='sum')
+    turnover.fillna(0, inplace=True)
+
+
