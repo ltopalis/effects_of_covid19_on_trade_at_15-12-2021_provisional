@@ -1,3 +1,5 @@
+from tkinter import messagebox
+
 import customtkinter
 import mysql.connector
 import pandas as pd
@@ -8,7 +10,7 @@ from dataExtractor import DataExtractor
 
 
 class ConnectDatabase:
-    def __init__(self, root_frame=None, frame=None, host=None, user=None, password=None, database=None):
+    def __init__(self, frame=None, host=None, user=None, password=None, database=None):
         if frame is None:
             return
         self.host = host
@@ -32,7 +34,6 @@ class ConnectDatabase:
                     cursor.execute(query)
 
                 frame.destroy()
-                root_frame.deiconify()
 
         except self.MYSQL.Error as e:
             print(e)
@@ -47,10 +48,11 @@ class ConnectDatabase:
         return f"{self.user}{pas}@{self.host}{db}"
 
 
-def insert_to_database(values, root_frame=None, frame=None, host=None, user=None, password=None, database=None):
-    server = ConnectDatabase(root_frame, frame, host, user, password, database)
+def insert_to_database(values, frame=None, host=None, user=None, password=None, database=None):
+    server = ConnectDatabase(frame, host, user, password, database)
 
-    engine = create_engine(f"mysql+pymysql://{server.user}:{server.password}@{server.host}/mydata")
+    engine = create_engine(f"mysql+pymysql://{server.user}:{server.password}@{server.host}/"
+                           f"effects_of_covid_19_on_trade_at_15_december_2021_provisional")
 
     # by day
     tonnes = values.tonnes_by_day
@@ -91,3 +93,27 @@ def insert_to_database(values, root_frame=None, frame=None, host=None, user=None
     result = pd.concat(frames, axis=1).reset_index()
 
     result.to_sql("month", con=engine, if_exists='replace', index=False)
+
+    # Παρουσίαση των 5 μηνών με το μεγαλύτερο τζίρο, ανεξαρτήτως μέσου μεταφοράς και είδους ανακυκλώσιμων ειδών
+    tonnes = values.max_tonnes_by_month
+    dollars = values.max_dollars_by_month
+    frames = [tonnes, dollars]
+    result = pd.concat(frames, axis=1).reset_index()
+
+    result.to_sql("5_max_turnout_by_month", con=engine, if_exists='replace', index=False)
+
+    # Παρουσίαση των 5 κατηγοριών εμπορευμάτων με το μεγαλύτερο τζίρο, για κάθε χώρα
+    tonnes = values.day_max_tonnes_by_commodity
+    tonnes['Measure'] = 'Tonnes'
+
+    dollars = values.day_max_dollars_by_commodity
+    dollars['Measure'] = '$'
+
+    frames = [tonnes, dollars]
+    result = pd.concat(frames, axis=0).reset_index()
+
+    result = result.drop('index', axis=1)
+
+    result.to_sql("5_max_turnout_by_commodity_for_each_country", con=engine, if_exists='replace', index=False)
+
+    messagebox.showinfo("Επιτυχία", "Τα δεδομένα αποθηκεύτηκαν επιτυχώς!")

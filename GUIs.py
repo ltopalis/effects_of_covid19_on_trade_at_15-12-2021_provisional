@@ -5,12 +5,11 @@ from Connect_DB import insert_to_database
 
 
 def second_window(root, data_extractor):
-    root.withdraw()
     main_frame = customtkinter.CTkToplevel(root)
     main_frame.geometry("500x350")
 
     def connect(data):
-        insert_to_database(data, root, main_frame, host_entry.get(), username_entry.get(), password_entry.get())
+        insert_to_database(data, main_frame, host_entry.get(), username_entry.get(), password_entry.get())
 
     inside_frame = customtkinter.CTkFrame(master=main_frame)
     inside_frame.pack(pady=20, padx=60, fill="both", expand=True)
@@ -39,7 +38,7 @@ def main_gui(de):
 
     # main window
     root = customtkinter.CTk()
-    root.geometry(f"{60 + 60 + 250 + 60 + 60 + 250 + 60 + 60}x{20 + (20 + 50 + 20) * 7 + 20}")
+    root.geometry(f"{60 + 60 + 250 + 60 + 60 + 250 + 60 + 60}x{20 + (20 + 50 + 20) * 8 + 20}")
     root.resizable(False, False)
 
     frame = customtkinter.CTkFrame(master=root)
@@ -92,13 +91,16 @@ def main_gui(de):
     max_tonnes_month_button = customtkinter.CTkButton(master=frame, width=250, height=50,
                                                       text="Παρουσίαση των 5 μηνών με\nτο μεγαλύτερο τζίρο (Tonnes)",
                                                       command=lambda: max_tonnes_by_month(de.max_tonnes_by_month))
-    # max_dollars_commodity_button = customtkinter.CTkButton(master=frame, width=250, height=50,
-    #                                                        text="Παρουσίαση των 5 κατηγοριών εμπορευμάτων\n"
-    #                                                             "με το μεγαλύτερο τζίρο, για κάθε χώρα",
-    #                                                        command=lambda: max_dollars_by_commodity(data, ax, plt,
-    #                                                                                                 canvas))
-    # clc_button = customtkinter.CTkButton(master=frame, width=250, height=50, text="Εκκαθάριση Οθόνης",
-    #                                      command=lambda: clc(ax, canvas), fg_color="red", hover_color="#970202")
+    max_dollars_commodity_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+                                                           text="Παρουσίαση των 5 κατηγοριών εμπορευμάτων\n"
+                                                                "με το μεγαλύτερο τζίρο, για κάθε χώρα ($)",
+                                                           command=lambda:
+                                                           max_dollars_by_commodity(de.day_max_dollars_by_commodity))
+    max_tonnes_commodity_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+                                                          text="5 κατηγορίες εμπορευμάτων με το μεγαλύτερο\n"
+                                                               "τζίρο, για κάθε χώρα (Tonnes)",
+                                                          command=lambda:
+                                                          max_tonnes_by_commodity(de.day_max_dollars_by_commodity))
     save_to_database_button = customtkinter.CTkButton(master=frame, width=250, height=50,
                                                       text="Aποθήκευση στην Βάση Δεδομένων",
                                                       command=lambda: second_window(root, de))
@@ -118,16 +120,10 @@ def main_gui(de):
     tonnes_commodity_button.grid(row=4, column=1, pady=20, padx=60)
     max_dollars_month_button.grid(row=5, column=0, pady=20, padx=60)
     max_tonnes_month_button.grid(row=5, column=1, pady=20, padx=60)
+    max_dollars_commodity_button.grid(row=6, column=0, pady=20, padx=60)
+    max_tonnes_commodity_button.grid(row=6, column=1, pady=20, padx=60)
 
-    save_to_database_button.grid(row=7, column=0, pady=20, padx=60)
-    save_to_csv_button.grid(row=7, column=1, pady=20, padx=60)
-    # max_dollars_commodity_button.pack(pady=5, padx=5)
-    # clc_button.pack(pady=5, padx=5, side=customtkinter.BOTTOM)
-    #
-    #
-    # def click():
-    #     print(f"{root.winfo_width()}x{root.winfo_height()}")
-    #
-    #
+    save_to_database_button.grid(row=8, column=0, pady=20, padx=60)
+    save_to_csv_button.grid(row=8, column=1, pady=20, padx=60)
 
     root.mainloop()

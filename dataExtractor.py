@@ -133,44 +133,46 @@ def _max_turnover_by_commodity_country(dataset_df: pandas.core.frame.DataFrame):
 
     turnover.fillna(0, inplace=True)
 
-    dollars = dict()
-    tonnes = dict()
-    countries = []
+    dollars_dict = {'Country': [], 'Commodity': [], 'Value': []}
+    tonnes_dict = {'Country': [], 'Commodity': [], 'Value': []}
+    countries = set()
     for (country, commodity) in turnover.index:
-        dollar_value = turnover.loc[country, commodity]['Imports']['$'] + \
-                       turnover.loc[country, commodity]['Reimports'][
-                           '$'] \
-                       - turnover.loc[country, commodity]['Exports']['$']
-        tonnes_value = - turnover.loc[country, commodity]['Exports']['Tonnes']
+        dollars = turnover.loc[country, commodity]['Imports']['$'] + \
+                  turnover.loc[country, commodity]['Reimports']['$'] - \
+                  turnover.loc[country, commodity]['Exports']['$']
 
-        countries.append(country)
+        dollars_dict['Country'] += [country]
+        dollars_dict['Commodity'] += [commodity]
+        dollars_dict['Value'] += [dollars]
 
-        dollars['$'] = dollar_value
-        tonnes['Tonnes'] = tonnes_value
+        tonnes = - turnover.loc[country, commodity]['Exports']['Tonnes']
 
-    dollars_df = pd.DataFrame(data=dollars, index=turnover.index)
-    tonnes_df = pd.DataFrame(data=tonnes, index=turnover.index)
+        tonnes_dict['Country'] += [country]
+        tonnes_dict['Commodity'] += [commodity]
+        tonnes_dict['Value'] += [tonnes]
 
-    countries = set(countries)
+        countries.add(country)
 
-    def get_top_5(group):
-        return group.head(5)
+    dollars_df = pd.DataFrame(dollars_dict)
+    tonnes_df = pd.DataFrame(tonnes_dict)
 
     dollars_dataframe = pd.DataFrame()
     tonnes_dataframe = pd.DataFrame()
     for country in countries:
-        dollars_return_df = dollars_df.loc[country].apply(lambda x: get_top_5(x))
-        dollars_return_df['Country'] = country
-        dollars_dataframe = pd.concat([dollars_dataframe, dollars_return_df])
+        temp_dollars_df = dollars_df.loc[dollars_df['Country'] == country]. \
+            sort_values(by=['Value'], ascending=False).head(5)
+        dollars_dataframe = pd.concat([dollars_dataframe, temp_dollars_df])
 
-        tonnes_return_df = tonnes_df.loc[country].apply(lambda x: get_top_5(x))
-        tonnes_return_df['Country'] = country
-        tonnes_dataframe = pd.concat([tonnes_dataframe, tonnes_return_df])
+        temp_tonnes_df = tonnes_df.loc[tonnes_df['Country'] == country]. \
+            sort_values(by=['Value'], ascending=False).head(5)
+        tonnes_dataframe = pd.concat([tonnes_dataframe, temp_tonnes_df])
 
-    dollars_dataframe = dollars_dataframe.groupby(by=['Country', 'Commodity']).sum()
-    tonnes_dataframe = tonnes_dataframe.groupby(by=['Country', 'Commodity']).sum()
+    dollars_dataframe = dollars_dataframe.reset_index()
+    tonnes_dataframe = tonnes_dataframe.reset_index()
 
-    # print(tonnes_dataframe)
+    dollars_dataframe = dollars_dataframe.drop('index', axis=1)
+    tonnes_dataframe = tonnes_dataframe.drop('index', axis=1)
+
     return dollars_dataframe, tonnes_dataframe
 
 
@@ -200,7 +202,8 @@ class DataExtractor:
     def _thread_function_3(self):
         self.max_dollars_by_commodity_in_country, self.max_tonnes_by_commodity_in_country = \
             _max_turnover_by_commodity_country(self.data)
-        # self.day_max_dollars_by_commodity, self.day_max_tonnes_by_commodity = _max_turnover_by_commodity_day(self.data)
+        self.day_max_dollars_by_commodity, self.day_max_tonnes_by_commodity = \
+            _max_turnover_by_commodity_country(self.data)
         print("END 3")
 
     def _thread_function_4(self):

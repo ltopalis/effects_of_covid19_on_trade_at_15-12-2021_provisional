@@ -154,87 +154,41 @@ def max_tonnes_by_month(data):
     plt.show()
 
 
-#
-# def max_dollars_by_commodity(data):
-#     data_by_commodity, _ = max_turnover_by_commodity_country(data)
-#
-#     countries = set()
-#     commodities = set()
-#     for (country, commodity) in data_by_commodity.index:
-#         countries.add(country)
-#         commodities.add(commodity)
-#
-#     countries = list(countries)
-#     commodities = list(commodities)
-#
-#     data_to_print = {}
-#     for country in countries:
-#         for commodity in commodities:
-#             try:
-#                 value = data_by_commodity.loc[(country, commodity)]['$']
-#                 if country not in data_to_print:
-#                     if len(commodity) >= 15:
-#                         commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
-#                     data_to_print[country] = []
-#                     data_to_print[country] += [[commodity]]
-#                     data_to_print[country] += [[value]]
-#                 else:
-#                     if len(commodity) >= 15:
-#                         commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
-#                     data_to_print[country][0] += [commodity]
-#                     data_to_print[country][1] += [value]
-#             except KeyError:
-#                 continue
-#
-#     for country in countries:
-#         bars = plt.bar(data_to_print[country][0], data_to_print[country][1], label='Tonnes', width=0.6, alpha=0.8)
-#         plt.title(f"5 κατηγορίες εμπορευμάτων με το μεγαλύτερο τζίρο,\nγια {country}")
-#         plt.xlabel("Κατηγορία Εμπορεύματος")
-#         plt.ylabel("Τόνοι")
-#         plt.bar_label(bars)
-#         plt.legend()
-#         plt.show()
-#
-# def max_tonnes_by_commodity(data):
-#     _, data_by_commodity = max_turnover_by_commodity_country(data)
-#
-#     countries = set()
-#     commodities = set()
-#     for (country, commodity) in data_by_commodity.index:
-#         countries.add(country)
-#         commodities.add(commodity)
-#
-#     countries = list(countries)
-#     commodities = list(commodities)
-#
-#     data_to_print = {}
-#     for country in countries:
-#         for commodity in commodities:
-#             try:
-#                 value = data_by_commodity.loc[(country, commodity)]['Tonnes']
-#                 if country not in data_to_print:
-#                     if len(commodity) >= 15:
-#                         commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
-#                     data_to_print[country] = []
-#                     data_to_print[country] += [[commodity]]
-#                     data_to_print[country] += [[value]]
-#                 else:
-#                     if len(commodity) >= 15:
-#                         commodity = '\n'.join(wrap(commodity, len(commodity[0:len(commodity) // 2])))
-#                     data_to_print[country][0] += [commodity]
-#                     data_to_print[country][1] += [value]
-#             except KeyError:
-#                 continue
-#
-#     for country in countries:
-#         bars = plt.bar(data_to_print[country][0], data_to_print[country][1], label='Tonnes', width=0.6, alpha=0.8)
-#         plt.title(f"5 κατηγορίες εμπορευμάτων με το μεγαλύτερο τζίρο,\nγια {country}")
-#         plt.xlabel("Κατηγορία Εμπορεύματος")
-#         plt.ylabel("Τόνοι")
-#         plt.bar_label(bars)
-#         plt.legend()
-#         plt.show()
-#
+def max_dollars_by_commodity(data):
+    countries = set()
+
+    for country in data['Country']:
+        countries.add(country)
+
+    for country in countries:
+        df = data.loc[data['Country'] == country]
+
+        bars = plt.bar(df['Commodity'], df['Value'], width=0.6, alpha=0.8, label='$')
+        plt.bar_label(bars)
+        plt.title(f"5 κατηγορίες εμπορευμάτων με το μεγαλύτερο τζίρο,\nγια {country}")
+        plt.xlabel("Κατηγορία Εμπορεύματος")
+        plt.ylabel("$")
+        plt.legend()
+        plt.show()
+
+
+def max_tonnes_by_commodity(data):
+    countries = set()
+
+    for country in data['Country']:
+        countries.add(country)
+
+    for country in countries:
+        df = data.loc[data['Country'] == country]
+
+        bars = plt.bar(df['Commodity'], df['Value'], width=0.6, alpha=0.8, label='Tonnes', color="red")
+        plt.bar_label(bars)
+        plt.title(f"5 κατηγορίες εμπορευμάτων με το μεγαλύτερο τζίρο,\nγια {country}")
+        plt.xlabel("Κατηγορία Εμπορεύματος")
+        plt.ylabel("Tonnes")
+        plt.legend()
+        plt.show()
+
 
 def clc(ax, canvas):
     ax.clear()
