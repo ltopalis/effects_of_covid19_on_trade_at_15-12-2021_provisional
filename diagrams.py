@@ -190,6 +190,34 @@ def max_tonnes_by_commodity(data):
         plt.show()
 
 
+def max_dollars_by_weekday(data):
+    fig, ax = plt.subplots()
+
+    ax.bar(data['Commodity'], data['Value'], width=0.5)
+
+    for i, row in data.iterrows():
+        ax.text(i, row['Value'], row['Weekday'], ha='center', va='bottom')
+
+    ax.set_xlabel('Commodity')
+    ax.set_ylabel("Value")
+
+    plt.show()
+
+
+def max_tonnes_by_weekday(data):
+    fig, ax = plt.subplots()
+
+    ax.bar(data['Commodity'], data['Value'], width=0.5)
+
+    for i, row in data.iterrows():
+        ax.text(i, row['Value'], row['Weekday'], ha='center', va='bottom')
+
+    ax.set_xlabel('Commodity')
+    ax.set_ylabel("Value")
+
+    plt.show()
+
+
 def clc(ax, canvas):
     ax.clear()
     canvas.draw()

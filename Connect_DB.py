@@ -103,10 +103,10 @@ def insert_to_database(values, frame=None, host=None, user=None, password=None, 
     result.to_sql("5_max_turnout_by_month", con=engine, if_exists='replace', index=False)
 
     # Παρουσίαση των 5 κατηγοριών εμπορευμάτων με το μεγαλύτερο τζίρο, για κάθε χώρα
-    tonnes = values.day_max_tonnes_by_commodity
+    tonnes = values.max_tonnes_by_commodity_in_country
     tonnes['Measure'] = 'Tonnes'
 
-    dollars = values.day_max_dollars_by_commodity
+    dollars = values.max_dollars_by_commodity_in_country
     dollars['Measure'] = '$'
 
     frames = [tonnes, dollars]
@@ -115,5 +115,19 @@ def insert_to_database(values, frame=None, host=None, user=None, password=None, 
     result = result.drop('index', axis=1)
 
     result.to_sql("5_max_turnout_by_commodity_for_each_country", con=engine, if_exists='replace', index=False)
+
+    # Παρουσίαση της ημέρας με το μεγαλύτερο τζίρο, για κάθε κατηγορία εμπορεύματος
+    tonnes = values.tonnes_by_day_commodity
+    tonnes['Measure'] = 'Tonnes'
+
+    dollars = values.dollars_by_day_commodity
+    dollars['Measure'] = '$'
+
+    frames = [tonnes, dollars]
+    result = pd.concat(frames, axis=0).reset_index()
+
+    result = result.drop('index', axis=1)
+
+    result.to_sql("max_turnout_by_day_for_each_commodity", con=engine, if_exists='replace', index=False)
 
     messagebox.showinfo("Επιτυχία", "Τα δεδομένα αποθηκεύτηκαν επιτυχώς!")

@@ -176,13 +176,57 @@ def _max_turnover_by_commodity_country(dataset_df: pandas.core.frame.DataFrame):
     return dollars_dataframe, tonnes_dataframe
 
 
-# def _max_turnover_by_commodity_day(dataset_df: pandas.core.frame.DataFrame):
-#     values_commodity_df = dataset_df.groupby(['Commodity', 'Weekday', 'Direction', 'Measure'], as_index=False).sum()
-#     values_commodity_df = values_commodity_df[['Commodity', 'Weekday', 'Direction', 'Measure', 'Value']]
-#
-#     turnover = pd.pivot_table(values_commodity_df, values='Value', index=['Weekday', 'Commodity'],
-#                               columns=['Direction', 'Measure'], aggfunc='sum')
-#     turnover.fillna(0, inplace=True)
+def _max_turnover_by_day_commodity(dataset_df: pandas.core.frame.DataFrame):
+    values_commodity_df = dataset_df.groupby(['Commodity', 'Weekday', 'Direction', 'Measure'], as_index=False).sum()
+
+    values_commodity_df = values_commodity_df[['Commodity', 'Weekday', 'Direction', 'Measure', 'Value']]
+
+    turnover = pd.pivot_table(values_commodity_df, values='Value', index=['Commodity', 'Weekday'],
+                              columns=['Direction', 'Measure'], aggfunc='sum')
+
+    turnover.fillna(0, inplace=True)
+
+    dollars_dict = {'Commodity': [], 'Weekday': [], 'Value': []}
+    tonnes_dict = {'Commodity': [], 'Weekday': [], 'Value': []}
+    commodities = set()
+    for (commodity, weekday) in turnover.index:
+        dollars = turnover.loc[commodity, weekday]['Imports']['$'] + \
+                  turnover.loc[commodity, weekday]['Reimports']['$'] - \
+                  turnover.loc[commodity, weekday]['Exports']['$']
+
+        dollars_dict['Weekday'] += [weekday]
+        dollars_dict['Commodity'] += [commodity]
+        dollars_dict['Value'] += [dollars]
+
+        tonnes = - turnover.loc[commodity, weekday]['Exports']['Tonnes']
+
+        tonnes_dict['Weekday'] += [weekday]
+        tonnes_dict['Commodity'] += [commodity]
+        tonnes_dict['Value'] += [tonnes]
+
+        commodities.add(commodity)
+
+    dollars_df = pd.DataFrame(dollars_dict)
+    tonnes_df = pd.DataFrame(tonnes_dict)
+
+    dollars_dataframe = pd.DataFrame()
+    tonnes_dataframe = pd.DataFrame()
+    for commodity in commodities:
+        temp_dollars_df = dollars_df.loc[dollars_df['Commodity'] == commodity].sort_values(by=['Value'],
+                                                                                           ascending=False).head(1)
+        dollars_dataframe = pd.concat([dollars_dataframe, temp_dollars_df])
+
+        temp_tonnes_df = tonnes_df.loc[tonnes_df['Commodity'] == commodity].sort_values(by=['Value'],
+                                                                                        ascending=False).head(1)
+        tonnes_dataframe = pd.concat([tonnes_dataframe, temp_tonnes_df])
+
+    dollars_dataframe = dollars_dataframe.reset_index()
+    tonnes_dataframe = tonnes_dataframe.reset_index()
+
+    dollars_dataframe = dollars_dataframe.drop('index', axis=1)
+    tonnes_dataframe = tonnes_dataframe.drop('index', axis=1)
+
+    return dollars_dataframe, tonnes_dataframe
 
 
 class DataExtractor:
@@ -190,26 +234,23 @@ class DataExtractor:
     def _thread_function_1(self):
         self.dollars_by_month, self.tonnes_by_month = _turnover_by_month(self.data)
         self.dollars_by_country, self.tonnes_by_country = _turnover_by_country(self.data)
-        self.dollars_by_transport, self.tonnes_by_transport = _turnover_by_transport(self.data)
-        print("END 1")
+        print("END 1\n", end="")
 
     def _thread_function_2(self):
         self.max_dollars_by_month, self.max_tonnes_by_month = _max_turnover_by_month(self.data)
         self.dollars_by_commodity, self.tonnes_by_commodity = _turnover_by_commodity(self.data)
-        self.max_dollars_by_month, self.max_tonnes_by_month = _max_turnover_by_month(self.data)
-        print("END 2")
+        print("END 2\n", end="")
 
     def _thread_function_3(self):
         self.max_dollars_by_commodity_in_country, self.max_tonnes_by_commodity_in_country = \
             _max_turnover_by_commodity_country(self.data)
-        self.day_max_dollars_by_commodity, self.day_max_tonnes_by_commodity = \
-            _max_turnover_by_commodity_country(self.data)
-        print("END 3")
+        self.dollars_by_transport, self.tonnes_by_transport = _turnover_by_transport(self.data)
+        print("END 3\n", end="")
 
     def _thread_function_4(self):
         self.dollars_by_day, self.tonnes_by_day = _turnover_by_day(self.data)
-        self.dollars_by_commodity, self.tonnes_by_commodity = _turnover_by_commodity(self.data)
-        print("END 4")
+        self.dollars_by_day_commodity, self.tonnes_by_day_commodity = _max_turnover_by_day_commodity(self.data)
+        print("END 4\n", end="")
 
     def __init__(self, csv_file=None):
         if csv_file is None:

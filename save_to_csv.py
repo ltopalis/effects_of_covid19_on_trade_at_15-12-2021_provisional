@@ -62,10 +62,10 @@ def save_to_csv(data):
     result.to_csv(f"{folder_to_save}5_max_turnout_by_month.csv", index=False)
 
     # Παρουσίαση των 5 κατηγοριών εμπορευμάτων με το μεγαλύτερο τζίρο, για κάθε χώρα
-    tonnes = data.day_max_tonnes_by_commodity
+    tonnes = data.max_tonnes_by_commodity_in_country
     tonnes['Measure'] = 'Tonnes'
 
-    dollars = data.day_max_dollars_by_commodity
+    dollars = data.max_dollars_by_commodity_in_country
     dollars['Measure'] = '$'
 
     frames = [tonnes, dollars]
@@ -74,5 +74,19 @@ def save_to_csv(data):
     result = result.drop('index', axis=1)
 
     result.to_csv(f"{folder_to_save}5_max_turnout_by_commodity_for_each_country.csv", index=False)
+
+    # Παρουσίαση της ημέρας με το μεγαλύτερο τζίρο, για κάθε κατηγορία εμπορεύματος
+    tonnes = data.tonnes_by_day_commodity
+    tonnes['Measure'] = 'Tonnes'
+
+    dollars = data.dollars_by_day_commodity
+    dollars['Measure'] = '$'
+
+    frames = [tonnes, dollars]
+    result = pd.concat(frames, axis=0).reset_index()
+
+    result = result.drop('index', axis=1)
+
+    result.to_csv(f"{folder_to_save}max_turnout_by_day_for_each_commodity.csv", index=False)
 
     messagebox.showinfo("Επιτυχία", "Τα δεδομένα αποθηκεύτηκαν επιτυχώς!")

@@ -38,73 +38,84 @@ def main_gui(de):
 
     # main window
     root = customtkinter.CTk()
-    root.geometry(f"{60 + 60 + 250 + 60 + 60 + 250 + 60 + 60}x{20 + (20 + 50 + 20) * 8 + 20}")
+    root.geometry(f"{60 + 60 + 270 + 60 + 60 + 270 + 60 + 60}x{20 + (20 + 50 + 20) * 9 + 20}")
     root.resizable(False, False)
 
     frame = customtkinter.CTkFrame(master=root)
-    print("HERE")
     frame.pack(pady=20, padx=60, fill='both', expand=True)
 
     # left side of the GUI - CONTROLS
 
-    dollars_months_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    dollars_months_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                     text="Συνολική παρουσίαση του\nτζίρου ανά μήνα ($)",
                                                     command=lambda: dollars_diagram_by_months(de.dollars_by_month))
-    tonnes_months_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    tonnes_months_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                    text="Συνολική παρουσίαση του τζίρου\nανά μήνα (Tonnes)",
                                                    command=lambda: tonnes_diagram_by_months(de.tonnes_by_month))
-    dollars_country_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    dollars_country_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                      text="Συνολική παρουσίαση του τζίρου\nγια κάθε χώρα ($)",
                                                      command=lambda: dollars_bar_by_country(de.dollars_by_country))
-    tonnes_country_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    tonnes_country_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                     text="Συνολική παρουσίαση του τζίρου\nγια κάθε χώρα (Tonnes)",
                                                     command=lambda: tonnes_bar_by_country(de.tonnes_by_country))
-    dollars_transport_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    dollars_transport_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                        text="Συνολική παρουσίαση του τζίρου για\n"
                                                             "κάθε μέσο μεταφοράς ($)",
                                                        command=lambda: dollars_bar_by_transport(
                                                            de.dollars_by_transport))
-    tonnes_transport_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    tonnes_transport_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                       text="Συνολική παρουσίαση του τζίρου για\n"
                                                            "κάθε μέσο μεταφοράς (Tonnes)",
                                                       command=lambda: tonnes_bar_by_transport(de.tonnes_by_transport))
-    dollars_day_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    dollars_day_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                  text="Συνολική παρουσίαση του τζίρου για\n"
                                                       "κάθε μέρα της εβδομάδας ($)",
                                                  command=lambda: dollars_bar_by_day(de.dollars_by_day))
-    tonnes_day_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    tonnes_day_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                 text="Συνολική παρουσίαση του τζίρου για\n"
                                                      "κάθε μέρα της εβδομάδας (Tonnes)",
                                                 command=lambda: tonnes_bar_by_day(de.tonnes_by_day))
-    dollars_commodity_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    dollars_commodity_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                        text="Συνολική παρουσίαση του τζίρου για\n"
                                                             "κάθε κατηγορία εμπορεύματος ($)",
                                                        command=lambda: dollars_bar_by_commodity(
                                                            de.dollars_by_commodity))
-    tonnes_commodity_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    tonnes_commodity_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                       text="Συνολική παρουσίαση του τζίρου για\n"
                                                            "κάθε κατηγορία εμπορεύματος (Tonnes)",
                                                       command=lambda: tonnes_bar_by_commodity(de.tonnes_by_commodity))
-    max_dollars_month_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    max_dollars_month_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                        text="Παρουσίαση των 5 μηνών με\nτο μεγαλύτερο τζίρο ($)",
                                                        command=lambda: max_dollars_by_month(de.max_dollars_by_month))
-    max_tonnes_month_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    max_tonnes_month_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                       text="Παρουσίαση των 5 μηνών με\nτο μεγαλύτερο τζίρο (Tonnes)",
                                                       command=lambda: max_tonnes_by_month(de.max_tonnes_by_month))
-    max_dollars_commodity_button = customtkinter.CTkButton(master=frame, width=250, height=50,
-                                                           text="Παρουσίαση των 5 κατηγοριών εμπορευμάτων\n"
-                                                                "με το μεγαλύτερο τζίρο, για κάθε χώρα ($)",
+    max_dollars_commodity_button = customtkinter.CTkButton(master=frame, width=270, height=50,
+                                                           text="5 κατηγορίες εμπορευμάτων με το\n"
+                                                                "μεγαλύτερο τζίρο, για κάθε χώρα ($)",
                                                            command=lambda:
-                                                           max_dollars_by_commodity(de.day_max_dollars_by_commodity))
-    max_tonnes_commodity_button = customtkinter.CTkButton(master=frame, width=250, height=50,
-                                                          text="5 κατηγορίες εμπορευμάτων με το μεγαλύτερο\n"
-                                                               "τζίρο, για κάθε χώρα (Tonnes)",
+                                                           max_dollars_by_commodity(
+                                                               de.max_dollars_by_commodity_in_country))
+    max_tonnes_commodity_button = customtkinter.CTkButton(master=frame, width=270, height=50,
+                                                          text="5 κατηγορίες εμπορευμάτων με το\n"
+                                                               "μεγαλύτερο τζίρο, για κάθε χώρα (Tonnes)",
                                                           command=lambda:
-                                                          max_tonnes_by_commodity(de.day_max_dollars_by_commodity))
-    save_to_database_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+                                                          max_tonnes_by_commodity(
+                                                              de.max_tonnes_by_commodity_in_country))
+    max_dollars_commodity_day_button = customtkinter.CTkButton(master=frame, width=270, height=50,
+                                                               text="Ημέρα με το μεγαλύτερο τζίρο, για\n"
+                                                                    "κάθε κατηγορία εμπορεύματος ($)",
+                                                               command=lambda:
+                                                               max_dollars_by_weekday(de.dollars_by_day_commodity))
+    max_tonnes_commodity_day_button = customtkinter.CTkButton(master=frame, width=270, height=50,
+                                                              text="Ημέρα με το μεγαλύτερο τζίρο, για\n"
+                                                                   "κάθε κατηγορία εμπορεύματος (Tonnes)",
+                                                              command=lambda:
+                                                              max_tonnes_by_weekday(de.tonnes_by_day_commodity))
+    save_to_database_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                       text="Aποθήκευση στην Βάση Δεδομένων",
                                                       command=lambda: second_window(root, de))
-    save_to_csv_button = customtkinter.CTkButton(master=frame, width=250, height=50,
+    save_to_csv_button = customtkinter.CTkButton(master=frame, width=270, height=50,
                                                  text="Aποθήκευση σε αρχεία .csv",
                                                  command=lambda: save_to_csv(de))
 
@@ -122,7 +133,8 @@ def main_gui(de):
     max_tonnes_month_button.grid(row=5, column=1, pady=20, padx=60)
     max_dollars_commodity_button.grid(row=6, column=0, pady=20, padx=60)
     max_tonnes_commodity_button.grid(row=6, column=1, pady=20, padx=60)
-
+    max_dollars_commodity_day_button.grid(row=7, column=0, pady=20, padx=60)
+    max_tonnes_commodity_day_button.grid(row=7, column=1, pady=20, padx=60)
     save_to_database_button.grid(row=8, column=0, pady=20, padx=60)
     save_to_csv_button.grid(row=8, column=1, pady=20, padx=60)
 
