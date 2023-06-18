@@ -233,24 +233,26 @@ class DataExtractor:
 
     def _thread_function_1(self):
         self.dollars_by_month, self.tonnes_by_month = _turnover_by_month(self.data)
-        self.dollars_by_country, self.tonnes_by_country = _turnover_by_country(self.data)
+        self.max_dollars_by_month, self.max_tonnes_by_month = _max_turnover_by_month(self.data)
         print("END 1\n", end="")
 
     def _thread_function_2(self):
-        self.max_dollars_by_month, self.max_tonnes_by_month = _max_turnover_by_month(self.data)
-        self.dollars_by_commodity, self.tonnes_by_commodity = _turnover_by_commodity(self.data)
+        self.dollars_by_day, self.tonnes_by_day = _turnover_by_day(self.data)
+        self.dollars_by_day_commodity, self.tonnes_by_day_commodity = _max_turnover_by_day_commodity(self.data)
         print("END 2\n", end="")
 
     def _thread_function_3(self):
+        self.dollars_by_country, self.tonnes_by_country = _turnover_by_country(self.data)
         self.max_dollars_by_commodity_in_country, self.max_tonnes_by_commodity_in_country = \
-            _max_turnover_by_commodity_country(self.data)
-        self.dollars_by_transport, self.tonnes_by_transport = _turnover_by_transport(self.data)
+            _max_turnover_by_commodity_country(self.data)        
         print("END 3\n", end="")
 
     def _thread_function_4(self):
-        self.dollars_by_day, self.tonnes_by_day = _turnover_by_day(self.data)
-        self.dollars_by_day_commodity, self.tonnes_by_day_commodity = _max_turnover_by_day_commodity(self.data)
+        self.dollars_by_commodity, self.tonnes_by_commodity = _turnover_by_commodity(self.data)
         print("END 4\n", end="")
+
+    def _thread_function_5(self):
+        self.dollars_by_transport, self.tonnes_by_transport = _turnover_by_transport(self.data)
 
     def __init__(self, csv_file=None):
         if csv_file is None:
@@ -270,7 +272,11 @@ class DataExtractor:
         x4 = threading.Thread(target=self._thread_function_4)
         x4.start()
 
+        x5 = threading.Thread(target=self._thread_function_5)
+        x5.start()
+
         x1.join()
         x2.join()
         x3.join()
         x4.join()
+        x5.join()
